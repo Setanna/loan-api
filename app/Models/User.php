@@ -20,7 +20,10 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
-        'password',
+        'postal_code',
+        'city',
+        'cpr_number',
+        'class'
     ];
 
     /**
@@ -39,7 +42,14 @@ class User extends Authenticatable
      * @var array<string, string>
      */
     protected $casts = [
-        'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    /**
+     * Get all of the loaned items of the student
+     */
+    public function laptops()
+    {
+        return $this->hasManyThrough(Laptop::class, Loan::class);
+    }
 }
