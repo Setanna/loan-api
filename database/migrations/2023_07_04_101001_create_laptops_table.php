@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('laptops', function (Blueprint $table) {
             $table->id();
+            $table->string('manifacturer');
+            $table->string('model');
+            $table->foreignId('mouse_id')->constrained('mice','id');
             $table->timestamps();
         });
     }

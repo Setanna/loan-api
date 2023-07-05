@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('loans', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('student_id')->constrained('users','id');
+            $table->foreignId('laptop_id')->constrained('laptops','id');
+            $table->dateTimeTz('loan_date', $precision = 0);
+            $table->dateTimeTz('loan_expiration_date', $precision = 0);
             $table->timestamps();
         });
     }

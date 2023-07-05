@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('mice', function (Blueprint $table) {
             $table->id();
+            $table->string('mouse_type');
             $table->timestamps();
         });
     }
