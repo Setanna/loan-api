@@ -14,6 +14,11 @@ class MouseResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'mouse' => [
+                'id' => $this->id,
+                'mouse_type' => $this->mouse_type,
+            ]
+        ];
     }
 }

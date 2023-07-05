@@ -14,6 +14,13 @@ class LaptopResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'laptop' => [
+                'id' => $this->id,
+                'manifacturer' => $this->manifacturer,
+                'model' => $this->model,
+                'mouse_id' => $this->mouse_id
+            ]
+        ];
     }
 }
