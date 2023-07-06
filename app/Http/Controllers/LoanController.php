@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\LoanResource;
 use App\Models\Loan;
 use Illuminate\Http\Request;
 
@@ -12,7 +13,7 @@ class LoanController extends Controller
      */
     public function index()
     {
-        //
+        return LoanResource::collection(Loan::all());
     }
 
     /**
@@ -28,7 +29,16 @@ class LoanController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'student_id' => 'required',
+            'laptop_id' => 'required',
+            'loan_date' => 'required',
+            'loan_expiration_date' => 'required'
+        ]);
+
+        $loan = Loan::firstOrCreate(['student_id' => $request->student_id, 'laptop_id' => $request->laptop_id, 'loan_date' => $request->loan_date, 'loan_expiration_date' => $request->loan_expiration_date]);
+
+        return new LoanResource($loan);
     }
 
     /**
@@ -52,7 +62,16 @@ class LoanController extends Controller
      */
     public function update(Request $request, Loan $loan)
     {
-        //
+        $request->validate([
+            'student_id' => 'required',
+            'laptop_id' => 'required',
+            'loan_date' => 'required',
+            'loan_expiration_date' => 'required'
+        ]);
+
+        $loan->update($request->all());
+
+        return new LoanResource($loan);
     }
 
     /**
@@ -60,6 +79,15 @@ class LoanController extends Controller
      */
     public function destroy(Loan $loan)
     {
-        //
+        // Try and delete a loan
+        try {
+            // finds the first result or throws an NotFoundException
+            $loanTobeDeleted = Loan::where('id', '=', $loan->id)->firstOrFail();
+            $loanTobeDeleted->delete();
+        } catch (\Exception $e) {
+            return response()->json("Record not found");
+        }
+
+        return response()->json(["Record deleted"]);
     }
 }

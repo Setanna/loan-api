@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\LaptopResource;
 use App\Models\Laptop;
 use Illuminate\Http\Request;
 
@@ -12,7 +13,7 @@ class LaptopController extends Controller
      */
     public function index()
     {
-        //
+        return LaptopResource::collection(Laptop::all());
     }
 
     /**
@@ -28,7 +29,15 @@ class LaptopController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'manifacturer' => 'required',
+            'model' => 'required',
+            'mouse_id' => 'required'
+        ]);
+
+        $laptop = Laptop::firstOrCreate(['model' => $request->model, 'manifacturer' => $request->manifacturer, 'mouse_id' => $request->mouse_id]);
+
+        return new LaptopResource($laptop);
     }
 
     /**
@@ -52,7 +61,15 @@ class LaptopController extends Controller
      */
     public function update(Request $request, Laptop $laptop)
     {
-        //
+        $request->validate([
+            'manifacturer' => 'required',
+            'model' => 'required',
+            'mouse_id' => 'required'
+        ]);
+
+        $laptop->update($request->all());
+
+        return new LaptopResource($laptop);
     }
 
     /**
@@ -60,6 +77,15 @@ class LaptopController extends Controller
      */
     public function destroy(Laptop $laptop)
     {
-        //
+        // Try and delete a laptop
+        try {
+            // finds the first result or throws an NotFoundException
+            $laptopTobeDeleted = Laptop::where('id', '=', $laptop->id)->firstOrFail();
+            $laptopTobeDeleted->delete();
+        } catch (\Exception $e) {
+            return response()->json("Record not found");
+        }
+
+        return response()->json(["Record deleted"]);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\MouseResource;
 use App\Models\Mouse;
 use Illuminate\Http\Request;
 
@@ -12,7 +13,7 @@ class MouseController extends Controller
      */
     public function index()
     {
-        //
+        return MouseResource::collection(Mouse::all());
     }
 
     /**
@@ -28,7 +29,13 @@ class MouseController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'mouse_type' => 'required'
+        ]);
+
+        $mouse = Mouse::firstOrCreate(['mouse_type' => $request->mouse_type]);
+
+        return new MouseResource($mouse);
     }
 
     /**
@@ -36,7 +43,7 @@ class MouseController extends Controller
      */
     public function show(Mouse $mouse)
     {
-        //
+        return new MouseResource($mouse);
     }
 
     /**
@@ -52,7 +59,13 @@ class MouseController extends Controller
      */
     public function update(Request $request, Mouse $mouse)
     {
-        //
+        $request->validate([
+            'mouse_type' => 'required'
+        ]);
+
+        $mouse->update($request->all());
+
+        return new MouseResource($mouse);
     }
 
     /**
@@ -60,6 +73,15 @@ class MouseController extends Controller
      */
     public function destroy(Mouse $mouse)
     {
-        //
+        // Try and delete a mouse
+        try {
+            // finds the first result or throws an NotFoundException
+            $mouseTobeDeleted = Mouse::where('id', '=', $mouse->id)->firstOrFail();
+            $mouseTobeDeleted->delete();
+        } catch (\Exception $e) {
+            return response()->json("Record not found");
+        }
+
+        return response()->json(["Record deleted"]);
     }
 }
